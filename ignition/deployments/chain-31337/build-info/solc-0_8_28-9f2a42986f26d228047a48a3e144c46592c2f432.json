@@ -1,0 +1,39 @@
+{
+  "_format": "hh3-sol-build-info-1",
+  "id": "solc-0_8_28-9f2a42986f26d228047a48a3e144c46592c2f432",
+  "solcVersion": "0.8.28",
+  "solcLongVersion": "0.8.28+commit.7893614a",
+  "userSourceNameMap": {
+    "contracts/EvidenceVault.sol": "project/contracts/EvidenceVault.sol"
+  },
+  "input": {
+    "language": "Solidity",
+    "settings": {
+      "evmVersion": "cancun",
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "outputSelection": {
+        "*": {
+          "": [
+            "ast"
+          ],
+          "*": [
+            "abi",
+            "evm.bytecode",
+            "evm.deployedBytecode",
+            "evm.methodIdentifiers",
+            "metadata"
+          ]
+        }
+      },
+      "remappings": []
+    },
+    "sources": {
+      "project/contracts/EvidenceVault.sol": {
+        "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.28;\n\ncontract EvidenceVault {\n    struct Evidence {\n        string fileHash;\n        uint256 timestamp;\n        address uploader;\n    }\n\n    mapping(string => Evidence) private evidences;\n    string[] public allHashes;\n\n    event EvidenceStored(string indexed fileHash, address indexed uploader);\n\n    function storeEvidence(string memory _fileHash) public {\n        require(evidences[_fileHash].timestamp == 0, \"Evidence already exists\");\n        \n        evidences[_fileHash] = Evidence({\n            fileHash: _fileHash,\n            timestamp: block.timestamp,\n            uploader: msg.sender\n        });\n        \n        allHashes.push(_fileHash);\n        emit EvidenceStored(_fileHash, msg.sender);\n    }\n\n    function getEvidence(string memory _fileHash) public view returns (string memory, uint256, address) {\n        Evidence memory e = evidences[_fileHash];\n        require(e.timestamp != 0, \"Evidence not found\");\n        return (e.fileHash, e.timestamp, e.uploader);\n    }\n\n    function getAllHashes() public view returns (string[] memory) {\n        return allHashes;\n    }\n}"
+      }
+    }
+  }
+}
